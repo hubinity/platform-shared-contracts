@@ -46,8 +46,8 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>${project.basedir}/events</sourceDirectory>
-                            <targetPackage>com.hubinity.contracts.events</targetPackage>
+                            <sourceDirectory>${project.basedir}/events/v1</sourceDirectory>
+                            <targetPackage>com.hubinity.contracts.events.v1</targetPackage>
                             <outputDirectory>${project.build.directory}/generated-sources/openapi/src/main/java</outputDirectory>
                         </configuration>
                     </execution>

@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.hubinity.local/events/OrderPaid.schema.json",
+  "$id": "https://contracts.hubinity.local/events/v1/OrderPaid.schema.json",
   "title": "OrderPaid",
   "description": "Emitted by the Order service when an order has been successfully paid. Consumed by Cashier (for ledger entry) and Catalog (for stock reservation release).",
   "type": "object",
-  "javaType": "com.hubinity.contracts.events.OrderPaid",
+  "javaType": "com.hubinity.contracts.events.v1.OrderPaid",
   "required": [
     "eventId",
     "orderId",

@@ -1,17 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.hubinity.local/events/ProductCreated.schema.json",
-  "title": "ProductCreated",
-  "description": "Emitted by the Catalog service when a new product is created. Consumed by Totem (for menu cache) and any downstream search/index.",
+  "$id": "https://contracts.hubinity.local/events/v1/ServiceRevenueGenerated.schema.json",
+  "title": "ServiceRevenueGenerated",
+  "description": "Emitted by the Support service when a service ticket is closed and produces billable revenue. Consumed by Cashier to book a ledger entry.",
   "type": "object",
-  "javaType": "com.hubinity.contracts.events.ProductCreated",
+  "javaType": "com.hubinity.contracts.events.v1.ServiceRevenueGenerated",
   "required": [
     "eventId",
-    "productId",
-    "sku",
-    "name",
-    "price",
-    "categoryId",
+    "ticketId",
+    "amount",
     "occurredAt",
     "schemaVersion"
   ],
@@ -24,21 +21,19 @@
       "type": "string",
       "default": "1.0.0"
     },
-    "productId": {
+    "ticketId": {
       "type": "string",
       "format": "uuid"
     },
-    "sku": {
+    "customerId": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 64
+      "format": "uuid"
     },
-    "name": {
+    "technicianId": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 200
+      "format": "uuid"
     },
-    "price": {
+    "amount": {
       "type": "number",
       "minimum": 0
     },
@@ -46,9 +41,9 @@
       "type": "string",
       "default": "BRL"
     },
-    "categoryId": {
+    "ledgerCategoryHint": {
       "type": "string",
-      "format": "uuid"
+      "description": "Optional hint for the cashier ledger category name."
     },
     "occurredAt": {
       "type": "string",

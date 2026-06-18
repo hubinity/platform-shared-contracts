@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.hubinity.local/events/StockChanged.schema.json",
+  "$id": "https://contracts.hubinity.local/events/v1/StockChanged.schema.json",
   "title": "StockChanged",
   "description": "Emitted by the Catalog service after a stock movement is applied. Consumed by any service that maintains a stock projection (e.g. Order, Totem, Cashier).",
   "type": "object",
-  "javaType": "com.hubinity.contracts.events.StockChanged",
+  "javaType": "com.hubinity.contracts.events.v1.StockChanged",
   "required": [
     "eventId",
     "productId",

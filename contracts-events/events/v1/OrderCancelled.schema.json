@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.hubinity.local/events/OrderCancelled.schema.json",
+  "$id": "https://contracts.hubinity.local/events/v1/OrderCancelled.schema.json",
   "title": "OrderCancelled",
   "description": "Emitted by the Order service when an order is cancelled. Consumed by Catalog (release reservations) and Cashier (compensating ledger entry if already booked).",
   "type": "object",
-  "javaType": "com.hubinity.contracts.events.OrderCancelled",
+  "javaType": "com.hubinity.contracts.events.v1.OrderCancelled",
   "required": [
     "eventId",
     "orderId",
