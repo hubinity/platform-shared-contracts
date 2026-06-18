@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.hubinity.local/events/ProductCreated.schema.json",
+  "title": "ProductCreated",
+  "description": "Emitted by the Catalog service when a new product is created. Consumed by Totem (for menu cache) and any downstream search/index.",
+  "type": "object",
+  "javaType": "com.hubinity.contracts.events.ProductCreated",
+  "required": [
+    "eventId",
+    "productId",
+    "sku",
+    "name",
+    "price",
+    "categoryId",
+    "occurredAt",
+    "schemaVersion"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "productId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sku": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "price": {
+      "type": "number",
+      "minimum": 0
+    },
+    "currency": {
+      "type": "string",
+      "default": "BRL"
+    },
+    "categoryId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

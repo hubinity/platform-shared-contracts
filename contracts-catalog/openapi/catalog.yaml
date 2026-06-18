@@ -1,0 +1,159 @@
+openapi: 3.1.0
+info:
+  title: Hubinity Catalog API
+  version: 0.1.0
+  description: |
+    Contract for the Catalog domain. Owns products, categories, and on-hand stock.
+    Backend services consume the generated DTOs from this module.
+  contact:
+    name: Hubinity Platform
+    email: platform@hubinity.local
+servers:
+  - url: https://api.hubinity.local
+    description: Production-like default; overridden per environment
+tags:
+  - name: products
+    description: Product catalog
+paths:
+  /api/v1/products/{id}:
+    get:
+      tags: [products]
+      operationId: getProductById
+      summary: Fetch a product by its identifier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+components:
+  schemas:
+    Product:
+      type: object
+      description: A sellable item in the catalog.
+      required:
+        - id
+        - sku
+        - name
+        - price
+        - categoryId
+        - active
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Product unique identifier
+        sku:
+          type: string
+          description: Stock-keeping unit, unique per tenant
+          minLength: 1
+          maxLength: 64
+        name:
+          type: string
+          description: Human-readable product name
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Optional long-form description
+        price:
+          type: number
+          format: double
+          description: Current sale price in the tenant's default currency
+          minimum: 0
+        categoryId:
+          type: string
+          format: uuid
+          description: Identifier of the owning category
+        active:
+          type: boolean
+          description: Whether the product is currently sellable
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Category:
+      type: object
+      description: A hierarchical grouping of products.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        parentId:
+          type: string
+          format: uuid
+          description: Optional parent category for hierarchies
+        active:
+          type: boolean
+          default: true
+    StockItem:
+      type: object
+      description: Current on-hand stock snapshot for a product.
+      required:
+        - productId
+        - quantityOnHand
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantityOnHand:
+          type: integer
+          format: int64
+          minimum: 0
+        reorderLevel:
+          type: integer
+          format: int64
+          minimum: 0
+        lastMovementAt:
+          type: string
+          format: date-time
+    StockMovement:
+      type: object
+      description: |
+        A discrete change in stock (inbound, outbound, adjustment). Drives the
+        StockChanged event downstream.
+      required:
+        - id
+        - productId
+        - quantityDelta
+        - reason
+        - occurredAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantityDelta:
+          type: integer
+          format: int64
+          description: Positive for inbound, negative for outbound
+        reason:
+          type: string
+          enum: [PURCHASE, SALE, ADJUSTMENT, RETURN, LOSS]
+        note:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time

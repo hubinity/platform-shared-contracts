@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.hubinity.local/events/PriceChanged.schema.json",
+  "title": "PriceChanged",
+  "description": "Emitted by the Catalog service when a product's price is updated. Consumed by any service caching prices (Totem, Order).",
+  "type": "object",
+  "javaType": "com.hubinity.contracts.events.PriceChanged",
+  "required": [
+    "eventId",
+    "productId",
+    "oldPrice",
+    "newPrice",
+    "occurredAt",
+    "schemaVersion"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "productId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "oldPrice": {
+      "type": "number",
+      "minimum": 0
+    },
+    "newPrice": {
+      "type": "number",
+      "minimum": 0
+    },
+    "currency": {
+      "type": "string",
+      "default": "BRL"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
