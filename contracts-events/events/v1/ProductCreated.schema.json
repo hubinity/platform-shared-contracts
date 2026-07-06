@@ -2,23 +2,25 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.hubinity.local/events/v1/ProductCreated.schema.json",
   "title": "ProductCreated",
-  "description": "Emitted by the Catalog service when a new product is created. Consumed by Totem (for menu cache) and any downstream search/index.",
+  "description": "Emitted by the Catalog service when a new product is created. Carries a snapshot of the product at creation time. Consumed by Totem (for menu cache) and any downstream search/index. Minor/patch evolution stays in this file via schemaVersion (ADR 0005); breaking changes go to a new events/vN/ path (ADR 0007).",
   "type": "object",
   "javaType": "com.hubinity.contracts.events.v1.ProductCreated",
   "required": [
     "eventId",
+    "schemaVersion",
     "productId",
     "sku",
     "name",
     "price",
     "categoryId",
-    "occurredAt",
-    "schemaVersion"
+    "active",
+    "occurredAt"
   ],
   "properties": {
     "eventId": {
       "type": "string",
-      "format": "uuid"
+      "format": "uuid",
+      "description": "= messageId do outbox; chave de deduplicação at-least-once"
     },
     "schemaVersion": {
       "type": "string",
@@ -40,15 +42,16 @@
     },
     "price": {
       "type": "number",
-      "minimum": 0
-    },
-    "currency": {
-      "type": "string",
-      "default": "BRL"
+      "minimum": 0,
+      "description": "Price in BRL (platform default currency)."
     },
     "categoryId": {
       "type": "string",
       "format": "uuid"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Whether the product is sellable at creation time."
     },
     "occurredAt": {
       "type": "string",
