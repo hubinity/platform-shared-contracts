@@ -37,6 +37,14 @@ paths:
                 $ref: '#/components/schemas/Product'
         '404':
           description: Product not found
+  /api/v1/products/{productId}/stock:
+    summary: Stock balance for a product (canonical path)
+    description: |
+      Canonical read address for a product's on-hand stock snapshot
+      (see components/schemas/StockItem). The GET operation, its
+      productId parameter, response schema, and authorization are
+      declared by follow-up contract tasks (T-001-2..T-001-5); this
+      entry fixes the address so service and consumers converge on it.
 components:
   schemas:
     Product:
