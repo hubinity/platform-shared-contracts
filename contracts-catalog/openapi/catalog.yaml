@@ -42,11 +42,10 @@ paths:
   /api/v1/products/{productId}/stock:
     summary: Stock balance for a product (canonical path)
     description: |
-      Canonical read address for a product's on-hand stock snapshot
-      (see components/schemas/StockItem). The GET operation and its
-      productId parameter are declared; the response body and
-      authorization are declared by follow-up contract tasks
-      (T-001-4, T-001-5).
+      Canonical read address for a product's on-hand stock snapshot.
+      The GET operation, its productId parameter, and the response body
+      are declared; authorization is declared by the follow-up contract
+      task (T-001-5).
     get:
       tags: [stock]
       operationId: getStockItemByProductId
@@ -62,6 +61,10 @@ paths:
       responses:
         '200':
           description: Current stock balance for the product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockItem'
         '404':
           description: Stock balance not found for the given product (unknown product or no stock record)
 components:
@@ -135,25 +138,36 @@ components:
           default: true
     StockItem:
       type: object
-      description: Current on-hand stock snapshot for a product.
+      description: Current stock balance snapshot for a product.
       required:
         - productId
-        - quantityOnHand
+        - available
+        - reserved
+        - reorderPoint
       properties:
         productId:
           type: string
           format: uuid
-        quantityOnHand:
+          description: Product unique identifier
+        available:
           type: integer
-          format: int64
+          format: int32
           minimum: 0
-        reorderLevel:
+          description: Units available for sale or reservation
+        reserved:
           type: integer
-          format: int64
+          format: int32
           minimum: 0
-        lastMovementAt:
+          description: Units held by active reservations
+        reorderPoint:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Threshold that signals restocking
+        updatedAt:
           type: string
           format: date-time
+          description: Timestamp of the last counter change
     StockMovement:
       type: object
       description: |
