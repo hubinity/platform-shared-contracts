@@ -14,6 +14,8 @@ servers:
 tags:
   - name: products
     description: Product catalog
+  - name: stock
+    description: Product stock balance and movements
 paths:
   /api/v1/products/{id}:
     get:
@@ -41,10 +43,26 @@ paths:
     summary: Stock balance for a product (canonical path)
     description: |
       Canonical read address for a product's on-hand stock snapshot
-      (see components/schemas/StockItem). The GET operation, its
-      productId parameter, response schema, and authorization are
-      declared by follow-up contract tasks (T-001-2..T-001-5); this
-      entry fixes the address so service and consumers converge on it.
+      (see components/schemas/StockItem). The GET operation below is
+      declared by T-001-2; its productId parameter, response body, and
+      authorization are declared by follow-up contract tasks
+      (T-001-3..T-001-5).
+    get:
+      tags: [stock]
+      operationId: getStockItemByProductId
+      summary: Fetch the current stock balance for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Current stock balance for the product
+        '404':
+          description: Stock balance not found for the given product (unknown product or no stock record)
 components:
   schemas:
     Product:
