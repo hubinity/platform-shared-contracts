@@ -97,11 +97,20 @@ paths:
         No image bytes are transmitted. Requires the admin realm role — a
         valid Bearer JWT alone is not sufficient; requests authenticated
         without that role are rejected with 403.
+      requestBody:
+        required: true
+        description: The image reference to register
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductImageRequest'
       responses:
         '201':
           description: |
             Image reference registered. No Location header is returned:
             under the URL-only strategy there is no per-image resource URI.
+        '400':
+          description: Malformed request body, or url absent, not a valid URI, or too long
         '403':
           description: Authenticated principal lacks the required admin role
         '404':
@@ -243,3 +252,19 @@ components:
         occurredAt:
           type: string
           format: date-time
+    ProductImageRequest:
+      type: object
+      description: |
+        A reference to an image hosted outside this system. The catalog
+        stores only the URL; image bytes are never transmitted. HTTPS URLs
+        are expected — an http:// URL will be blocked as mixed content by
+        browsers rendering the catalog over HTTPS.
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          minLength: 1
+          maxLength: 2048
+          description: Absolute URL of the externally hosted image
