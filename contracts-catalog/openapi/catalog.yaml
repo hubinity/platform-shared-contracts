@@ -75,9 +75,11 @@ paths:
     description: |
       Address for managing a product's image references. Images are stored
       externally; this API records only their URLs (URL-only reference
-      strategy) and never receives image bytes. Operations on this path are
-      declared by the remaining T-002 tasks. Access requires a valid Bearer
-      JWT (inherited from the document-level bearerAuth security scheme).
+      strategy) and never receives image bytes. The POST operation is
+      declared; its request body and response body are completed by
+      T-002-3 and T-002-4. Access requires a valid Bearer JWT (inherited
+      from the document-level bearerAuth security scheme); registering an
+      image additionally requires the admin role.
     parameters:
       - name: productId
         in: path
@@ -86,6 +88,24 @@ paths:
         schema:
           type: string
           format: uuid
+    post:
+      tags: [products]
+      operationId: addProductImage
+      summary: Register an image reference for a product
+      description: |
+        Records the URL of an externally hosted image against the product.
+        No image bytes are transmitted. Requires the admin realm role — a
+        valid Bearer JWT alone is not sufficient; requests authenticated
+        without that role are rejected with 403.
+      responses:
+        '201':
+          description: |
+            Image reference registered. No Location header is returned:
+            under the URL-only strategy there is no per-image resource URI.
+        '403':
+          description: Authenticated principal lacks the required admin role
+        '404':
+          description: Product not found
 components:
   securitySchemes:
     bearerAuth:
