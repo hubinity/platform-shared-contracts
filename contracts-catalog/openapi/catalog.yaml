@@ -5,6 +5,17 @@ info:
   description: |
     Contract for the Catalog domain. Owns products, categories, and on-hand stock.
     Backend services consume the generated DTOs from this module.
+
+    Product image storage — URL-only reference strategy: product images are
+    hosted outside this system. The catalog persists only absolute URLs and
+    never receives, stores, or serves image bytes; there is no upload,
+    download, or transformation operation, and no per-image resource URI.
+    HTTPS URLs are expected — an http:// URL will be blocked as mixed content
+    by browsers rendering the catalog over HTTPS. Availability and lifecycle
+    of the referenced file belong to the external host: the catalog does not
+    verify that a URL resolves, and a reference that stops resolving is not a
+    contract violation. Removing an image removes the reference, never a
+    stored file.
   contact:
     name: Hubinity Platform
     email: platform@hubinity.local
@@ -73,13 +84,13 @@ paths:
   /api/v1/products/{productId}/images:
     summary: Image references for a product
     description: |
-      Address for managing a product's image references. Images are stored
-      externally; this API records only their URLs (URL-only reference
-      strategy) and never receives image bytes. The POST operation is
-      declared; its request body and response body are completed by
-      T-002-3 and T-002-4. Access requires a valid Bearer JWT (inherited
-      from the document-level bearerAuth security scheme); registering an
-      image additionally requires the admin role.
+      Address for managing a product's image references. The POST operation,
+      its request body, its response body, and the authorization requirement
+      are fully declared (T-002 chain complete). Images follow the URL-only
+      reference strategy declared at the document level: this API records only
+      their URLs and never receives image bytes. Access requires a valid
+      Bearer JWT (inherited from the document-level bearerAuth security
+      scheme); registering an image additionally requires the admin role.
     parameters:
       - name: productId
         in: path
