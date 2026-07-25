@@ -70,6 +70,22 @@ paths:
                 $ref: '#/components/schemas/StockItem'
         '404':
           description: Stock balance not found for the given product (unknown product or no stock record)
+  /api/v1/products/{productId}/images:
+    summary: Image references for a product
+    description: |
+      Address for managing a product's image references. Images are stored
+      externally; this API records only their URLs (URL-only reference
+      strategy) and never receives image bytes. Operations on this path are
+      declared by the remaining T-002 tasks. Access requires a valid Bearer
+      JWT (inherited from the document-level bearerAuth security scheme).
+    parameters:
+      - name: productId
+        in: path
+        required: true
+        description: Product UUID
+        schema:
+          type: string
+          format: uuid
 components:
   securitySchemes:
     bearerAuth:
