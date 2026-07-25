@@ -11,6 +11,8 @@ info:
 servers:
   - url: https://api.hubinity.local
     description: Production-like default; overridden per environment
+security:
+  - bearerAuth: []
 tags:
   - name: products
     description: Product catalog
@@ -43,9 +45,10 @@ paths:
     summary: Stock balance for a product (canonical path)
     description: |
       Canonical read address for a product's on-hand stock snapshot.
-      The GET operation, its productId parameter, and the response body
-      are declared; authorization is declared by the follow-up contract
-      task (T-001-5).
+      The GET operation, its productId parameter, the response body, and
+      the authorization requirement are fully declared (T-001 chain
+      complete). Access requires a valid Bearer JWT (see the bearerAuth
+      security scheme); no admin role is required for reads.
     get:
       tags: [stock]
       operationId: getStockItemByProductId
@@ -68,6 +71,12 @@ paths:
         '404':
           description: Stock balance not found for the given product (unknown product or no stock record)
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Keycloak-issued JWT (realm hibit) presented as a Bearer token.
   schemas:
     Product:
       type: object
