@@ -184,6 +184,17 @@ components:
         updatedAt:
           type: string
           format: date-time
+        images:
+          type: array
+          description: |
+            Absolute URLs of the product's images, in order — the first
+            element is the primary image. Absent or empty when the product
+            has no image registered. Images are hosted externally; see the
+            URL-only reference strategy declared at the document level.
+          items:
+            type: string
+            format: uri
+            maxLength: 2048
     Category:
       type: object
       description: A hierarchical grouping of products.
