@@ -52,6 +52,10 @@ paths:
                 $ref: '#/components/schemas/Product'
         '404':
           description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   /api/v1/products/{productId}/stock:
     summary: Stock balance for a product (canonical path)
     description: |
