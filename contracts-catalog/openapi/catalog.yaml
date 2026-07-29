@@ -85,6 +85,10 @@ paths:
                 $ref: '#/components/schemas/StockItem'
         '404':
           description: Stock balance not found for the given product (unknown product or no stock record)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   /api/v1/products/{productId}/images:
     summary: Image references for a product
     description: |
