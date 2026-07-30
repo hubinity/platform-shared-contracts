@@ -134,10 +134,22 @@ paths:
                 $ref: '#/components/schemas/ProductImageResponse'
         '400':
           description: Malformed request body, or url absent, not a valid URI, or too long
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
         '403':
           description: Authenticated principal lacks the required admin role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
         '404':
           description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
 components:
   securitySchemes:
     bearerAuth:
