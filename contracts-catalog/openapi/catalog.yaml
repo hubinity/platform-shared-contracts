@@ -11,9 +11,13 @@ info:
 servers:
   - url: https://api.hubinity.local
     description: Production-like default; overridden per environment
+security:
+  - bearerAuth: []
 tags:
   - name: products
     description: Product catalog
+  - name: stock
+    description: Product stock balance and movements
 paths:
   /api/v1/products/{id}:
     get:
@@ -37,7 +41,42 @@ paths:
                 $ref: '#/components/schemas/Product'
         '404':
           description: Product not found
+  /api/v1/products/{productId}/stock:
+    summary: Stock balance for a product (canonical path)
+    description: |
+      Canonical read address for a product's on-hand stock snapshot.
+      The GET operation, its productId parameter, the response body, and
+      the authorization requirement are fully declared (T-001 chain
+      complete). Access requires a valid Bearer JWT (see the bearerAuth
+      security scheme); no admin role is required for reads.
+    get:
+      tags: [stock]
+      operationId: getStockItemByProductId
+      summary: Fetch the current stock balance for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Product UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Current stock balance for the product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockItem'
+        '404':
+          description: Stock balance not found for the given product (unknown product or no stock record)
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Keycloak-issued JWT (realm hibit) presented as a Bearer token.
   schemas:
     Product:
       type: object
@@ -108,25 +147,36 @@ components:
           default: true
     StockItem:
       type: object
-      description: Current on-hand stock snapshot for a product.
+      description: Current stock balance snapshot for a product.
       required:
         - productId
-        - quantityOnHand
+        - available
+        - reserved
+        - reorderPoint
       properties:
         productId:
           type: string
           format: uuid
-        quantityOnHand:
+          description: Product unique identifier
+        available:
           type: integer
-          format: int64
+          format: int32
           minimum: 0
-        reorderLevel:
+          description: Units available for sale or reservation
+        reserved:
           type: integer
-          format: int64
+          format: int32
           minimum: 0
-        lastMovementAt:
+          description: Units held by active reservations
+        reorderPoint:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Threshold that signals restocking
+        updatedAt:
           type: string
           format: date-time
+          description: Timestamp of the last counter change
     StockMovement:
       type: object
       description: |
