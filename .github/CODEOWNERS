@@ -1,4 +1,4 @@
-# Default owners — every PR pings DevOps unless a more specific rule below matches.
+# Default owners — every PR pings DevOps unless a later rule below also matches (last match wins).
 *                       @hubinity/devops
 
 # Shared infra files
