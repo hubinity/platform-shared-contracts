@@ -1,0 +1,7 @@
+# Default owners — every PR pings DevOps unless a later rule below also matches (last match wins).
+*                       @hubinity/devops
+
+# Shared infra files
+Dockerfile              @hubinity/devops
+docker-compose*.yml     @hubinity/devops
+.github/workflows/**    @hubinity/devops
