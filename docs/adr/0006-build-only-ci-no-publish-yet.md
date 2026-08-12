@@ -1,6 +1,6 @@
 # ADR 0006 — CI builds only; GitHub Packages publishing deferred
 
-- **Status**: Accepted
+- **Status**: Superseded by [ADR 0010](0010-enable-github-packages-publish.md)
 - **Date**: 2026-06-18
 - **Deciders**: Hubinity Platform team
 
