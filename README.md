@@ -94,22 +94,27 @@ platform-shared-contracts/
 │       ├── index.ts
 │       ├── theme.css
 │       └── theme.totem.css
-├── docs/adr/                                # 8 ADRs (decisões de arquitetura)
-└── .github/workflows/ci.yml                 # CI build-only (não publica)
+├── docs/adr/                                # 10 ADRs (decisões de arquitetura)
+└── .github/workflows/
+    ├── ci.yml                               # build/verify em todo push e PR (não publica)
+    ├── publish-maven.yml                    # deploy do reactor em tags v<versão> (ADR 0010)
+    └── publish-tailwind-preset.yml          # npm publish em tags tailwind-preset-v<versão> (ADR 0010)
 ```
 
 Os DTOs gerados aterrissam em `target/generated-sources/openapi/src/main/java/`, sob `com.hubinity.contracts.<domain>.dto` (ou `com.hubinity.contracts.events` para eventos), e são adicionados ao classpath via `build-helper-maven-plugin`.
 
 ## ⚙️ Configuração e Variáveis de Ambiente
-```bash
-# Para o futuro mvn deploy → GitHub Packages (hoje desabilitado;
-# o bloco <distributionManagement> no parent pom está comentado).
-GITHUB_USERNAME=<seu-user-github>
-GITHUB_TOKEN=<PAT com escopo read:packages e write:packages>
 
-# Para o futuro npm publish do tailwind-preset:
-# o package.json já define publishConfig.registry = https://npm.pkg.github.com
+**Para consumir os pacotes** (`mvn install`/`deploy` remoto, `npm install @hubinity/*`), você precisa de um [PAT clássico](https://github.com/settings/tokens) pessoal com o escopo `read:packages`:
+
+```bash
+GITHUB_USERNAME=<seu-user-github>
+GITHUB_TOKEN=<PAT clássico com escopo read:packages>
 ```
+
+Copie `./settings.xml` para `~/.m2/settings.xml` (ou mergeie o bloco `<servers>` se já tiver um) — ele já referencia essas duas variáveis pelo id de servidor `github`, que é o mesmo usado em `<distributionManagement>` no `pom.xml`. Para npm, veja `tailwind-preset/README.md` (seção *Installation*).
+
+**Para publicar** (CI ou manualmente), o token precisa também de `write:packages` e `delete:packages` — veja a seção *Publicação* abaixo.
 
 Nenhuma variável é necessária para o build local — `mvn -B clean package -DskipTests` funciona offline depois do primeiro download de dependências.
 
@@ -181,13 +186,26 @@ npm install @hubinity/tailwind-preset
 /* ou para o totem: @import "@hubinity/tailwind-preset/theme.totem.css"; */
 ```
 
-### Publicação (futuro)
-A publicação em **GitHub Packages** ainda **não está habilitada**:
-1. Descomentar `<distributionManagement>` em `./pom.xml`.
-2. Copiar `./settings.xml` para `~/.m2/settings.xml` (ou mergear o bloco `<servers>`) e exportar `GITHUB_USERNAME`/`GITHUB_TOKEN`.
-3. Rodar `mvn -DskipTests deploy`.
+### Publicação
+Publicação em **GitHub Packages** é feita por tag, nunca em push direto para `main` (ADR 0010) — `ci.yml` continua rodando só `mvn verify`.
 
-Hoje o workflow `ci.yml` apenas roda `mvn verify` — não publica.
+**Reactor Maven** (`contracts-*`, versão única compartilhada pelo parent `pom.xml`):
+1. Bumpar `<version>` no `pom.xml` raiz, se necessário, e mergear em `main`.
+2. Criar e empurrar uma tag `v<versão>` idêntica à do `pom.xml` (ex.: `v0.1.0-SNAPSHOT`):
+   ```bash
+   git tag v0.1.0-SNAPSHOT && git push origin v0.1.0-SNAPSHOT
+   ```
+3. `publish-maven.yml` valida que a tag bate com `<version>` do `pom.xml`, roda `mvn verify` e então `mvn deploy`.
+
+**`tailwind-preset`** (versão independente, `tailwind-preset/package.json`):
+1. Bumpar `"version"` em `tailwind-preset/package.json` e mergear em `main`.
+2. Criar e empurrar uma tag `tailwind-preset-v<versão>` (ex.: `tailwind-preset-v0.1.0`):
+   ```bash
+   git tag tailwind-preset-v0.1.0 && git push origin tailwind-preset-v0.1.0
+   ```
+3. `publish-tailwind-preset.yml` valida a tag contra `package.json`, builda e roda `npm publish`.
+
+Ambos os workflows autenticam com o secret de organização `GH_PACKAGES_TOKEN` (PAT clássico `write:packages`+`read:packages`+`delete:packages`, gerado por um owner da org e salvo em *Organization settings → Secrets and variables → Actions*) — não usam o `GITHUB_TOKEN` efêmero do Actions, para que o mesmo secret sirva os dois workflows e qualquer pipeline de publish futuro sem reconfiguração por repo.
 
 ## 🔄 Fluxos Principais
 

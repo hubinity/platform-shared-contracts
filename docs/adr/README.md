@@ -11,7 +11,8 @@ Current ADRs:
 - [0003 — Jakarta EE namespace, Jackson serialization, no bean validation](0003-jakarta-ee-and-jackson-only.md)
 - [0004 — JSON Schema + jsonschema2pojo for cross-service events](0004-jsonschema2pojo-for-events.md)
 - [0005 — SemVer, `-SNAPSHOT` start, and N/N-1 coexistence](0005-semver-snapshot-and-coexistence.md)
-- [0006 — CI builds only; GitHub Packages publishing deferred](0006-build-only-ci-no-publish-yet.md)
+- [0006 — CI builds only; GitHub Packages publishing deferred](0006-build-only-ci-no-publish-yet.md) — superseded by 0010
+- [0010 — Enable GitHub Packages publish (supersedes 0006)](0010-enable-github-packages-publish.md)
 
 ## Adding a new ADR
 

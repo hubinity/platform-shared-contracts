@@ -27,12 +27,15 @@ npm install --save-dev @hubinity/tailwind-preset tailwindcss@^4
 
 > The package is published to **GitHub Packages** under the `@hubinity`
 > scope. Consumers need an `.npmrc` mapping the scope to the GitHub
-> registry:
+> registry, authenticated with a classic PAT scoped to `read:packages`:
 >
 > ```
 > @hubinity:registry=https://npm.pkg.github.com
-> //npm.pkg.github.com/:_authToken=${NPM_TOKEN}
+> //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 > ```
+>
+> (Same `GITHUB_TOKEN` env var used for the Maven side — see the root
+> `README.md`'s *Configuração e Variáveis de Ambiente* section.)
 
 Fonts (Inter, Manrope, JetBrains Mono) are the **consumer's concern** —
 install `@fontsource/inter`, `@fontsource/manrope`, `@fontsource/jetbrains-mono`
@@ -187,17 +190,25 @@ Outputs:
 - `dist/theme.css` — backoffice CSS @theme tokens
 - `dist/theme.totem.css` — totem CSS @theme tokens
 
-## Publishing (future — not in this release)
+## Publishing
+
+Publishing is tag-triggered, not automatic on every push (ADR 0010). Bump
+`"version"` in `package.json`, merge to `main`, then push a matching tag:
 
 ```bash
-npm publish
+git tag tailwind-preset-v0.1.0
+git push origin tailwind-preset-v0.1.0
 ```
 
-Publishing requires:
+`.github/workflows/publish-tailwind-preset.yml` verifies the tag matches
+`package.json`'s `"version"`, then runs `npm ci && npm run build && npm publish`
+authenticated with the org-level `GH_PACKAGES_TOKEN` secret (classic PAT,
+`write:packages` + `read:packages` + `delete:packages` — see the root
+`README.md`'s *Publicação* section for how that secret is provisioned).
 
-- A `GITHUB_TOKEN` with `write:packages` scope in CI.
-- A non-`SNAPSHOT` version (the publishing CI job is not yet wired up — see
-  ADR 0008).
+To publish manually instead, export `GITHUB_TOKEN` (PAT with `write:packages`)
+and run `npm publish` locally — `publishConfig.registry` in `package.json`
+already points at GitHub Packages.
 
 ## License
 

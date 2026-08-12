@@ -1,0 +1,54 @@
+name: Publish tailwind-preset (npm)
+
+# ADR 0010 — publishes @hubinity/tailwind-preset to GitHub Packages.
+# Independent version/tag scheme from the Maven reactor (ADR 0008):
+# push a tag matching tailwind-preset-v<package.json version>, e.g.
+# tailwind-preset-v0.1.0. The tag must exactly match "version" in
+# tailwind-preset/package.json — bump it there first, then tag.
+on:
+  push:
+    tags:
+      - "tailwind-preset-v[0-9]+.[0-9]+.[0-9]+"
+      - "tailwind-preset-v[0-9]+.[0-9]+.[0-9]+-*"
+
+jobs:
+  publish:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tailwind-preset
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@hubinity"
+
+      - name: Verify tag matches package.json version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#tailwind-preset-v}"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME (version $TAG_VERSION) does not match package.json version $PKG_VERSION. Bump \"version\" in package.json before tagging."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
